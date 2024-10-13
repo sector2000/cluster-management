@@ -1,0 +1,7 @@
+apiVersion: cluster.open-cluster-management.io/v1beta2
+kind: ManagedClusterSetBinding
+metadata:
+  name: {{ .Values.cluster_name }}
+  namespace: acm-policies-{{ .Values.cluster_name }}
+spec:
+  clusterSet: {{ .Values.cluster_name }}

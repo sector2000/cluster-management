@@ -1,0 +1,8 @@
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: {{ .Values.cluster_name }}
+  namespace: acm-policies-{{ .Values.cluster_name }}
+spec:
+  clusterSets:
+  - {{ .Values.cluster_name }}

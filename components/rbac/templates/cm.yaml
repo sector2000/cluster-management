@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: admin-user
+  namespace: acm-policies-{{ .Values.cluster_name }}
+data:
+  user: user2-{{ .Values.cluster_name }}

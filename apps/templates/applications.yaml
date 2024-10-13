@@ -1,0 +1,42 @@
+{{- range include "applications.json" $ | fromJsonArray }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .name }}-{{ $.Values.cluster_name }}
+  namespace: openshift-gitops
+spec:
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+  source:
+    targetRevision: '{{ .version }}'
+    repoURL: {{ .repoURL }}
+    path: {{ .path }}
+    helm:
+      {{- if .valueFiles }}
+      valueFiles:
+        {{- .valueFiles | nindent 8 }}
+      {{- end }}
+      values: |-
+        app_version: {{ .version }}
+        cluster_name: {{ $.Values.cluster_name }}
+  syncPolicy:
+    {{- if .syncOptions }}
+    syncOptions:
+      {{- .syncOptions | toYaml | nindent 6 }}
+    {{- end }}
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      backoff:
+        duration: 10s
+        factor: 1
+        maxDuration: 20m
+      limit: 60
+  {{- if .ignoreDifferences }}
+  ignoreDifferences:
+    {{- .ignoreDifferences | toYaml | nindent 4 }}
+  {{- end }}
+---
+{{- end }}
