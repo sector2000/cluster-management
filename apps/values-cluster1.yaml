@@ -1,3 +1,8 @@
 rbac:
   enabled: true
   version: main
+
+
+openshift_gitops:
+  enabled: true
+  version: main

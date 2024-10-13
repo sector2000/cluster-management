@@ -1,0 +1,52 @@
+{{ $name := "openshift-gitops-operator" }}
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: {{ $name }}
+  namespace: acm-policies-{{ .Values.cluster_name }}
+  annotations:
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+    policy.open-cluster-management.io/categories: AC Access Control
+    policy.open-cluster-management.io/controls: AC-3 Access Enforcement
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1beta1
+      kind: OperatorPolicy
+      metadata:
+        name: {{ $name }}
+      spec:
+        remediationAction: enforce
+        severity: low
+        complianceType: musthave
+        upgradeApproval: Automatic
+        operatorGroup:
+          name: {{ $name }}
+          namespace: openshift-gitops-operator
+        subscription:
+          channel: {{ .Values.channel }}
+          name: openshift-gitops-operator
+          namespace: openshift-gitops-operator
+          source: redhat-operators
+          sourceNamespace: openshift-marketplace
+          startingCSV: openshift-gitops-operator.v{{ .Values.gitops_operator.version }}
+        versions:
+        - openshift-gitops-operator.v{{ .Values.gitops_operator.version }}
+
+---
+
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: {{ $name }}
+  namespace: acm-policies-{{ .Values.cluster_name }}
+placementRef:
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+  name: {{ .Values.cluster_name }}
+subjects:
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: {{ $name }}
