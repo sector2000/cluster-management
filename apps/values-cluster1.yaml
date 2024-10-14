@@ -1,7 +1,9 @@
+app_of_apps:
+  version: main
+
 rbac:
   enabled: true
   version: main
-
 
 openshift_gitops:
   enabled: true
